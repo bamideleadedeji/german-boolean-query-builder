@@ -5,12 +5,11 @@ import streamlit as st
 # Page Configuration
 st.set_page_config(
     page_title="German Job Market Boolean Query Generator",
-    page_icon=" ",
+    page_icon="🔍",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
-# Custom Styling for Streamlit Controls
 # Custom Styling for Streamlit Controls
 st.markdown(
     """
@@ -27,14 +26,11 @@ st.markdown(
     }
     </style>
 """,
-    unsafe_allow_html=True,  # Corrected parameter name
-)
-""",
-    unsafe_allow_allow_html=True,
+    unsafe_allow_html=True,
 )
 
 st.markdown(
-    "<div class='main-header'> German Tech & Finance Boolean Query Generator</div>",
+    "<div class='main-header'>🔍 German Tech & Finance Boolean Query Generator</div>",
     unsafe_allow_html=True,
 )
 st.markdown(
@@ -43,7 +39,7 @@ st.markdown(
 )
 
 # Sidebar - Preset Target Profiles
-st.sidebar.header(" Preset Target Profiles")
+st.sidebar.header("🎯 Preset Target Profiles")
 preset = st.sidebar.selectbox(
     "Select a pre-filled configuration:",
     [
@@ -55,7 +51,7 @@ preset = st.sidebar.selectbox(
 )
 
 st.sidebar.markdown("---")
-st.sidebar.header(" Filter Preferences")
+st.sidebar.header("⚙️ Filter Preferences")
 
 # Remote Work Toggle in Sidebar
 include_remote = st.sidebar.checkbox(
@@ -64,9 +60,9 @@ include_remote = st.sidebar.checkbox(
     help="Toggle off if you only want roles requiring immediate on-site relocation.",
 )
 
+st.sidebar.markdown("---")
 st.sidebar.markdown(
     """
----
 **Targeting Platforms:**
 * LinkedIn Germany
 * StepStone.de
@@ -136,7 +132,7 @@ with col2:
         )
     else:
         remote_input = ""
-        st.info(" Remote keywords excluded. Query will focus strictly on relocation/on-site postings.")
+        st.info("💡 Remote keywords excluded. Query will focus strictly on relocation/on-site postings.")
 
     lang_input = st.text_area(
         "Working Language Keywords",
@@ -170,7 +166,7 @@ excludes = [x.strip() for x in exclude_input.split(",") if x.strip()]
 
 
 def build_boolean_query(titles, skills, domain, remotes, langs, visas, excludes):
-    """Dynamically generates a structured Boolean search query string."""
+    # Dynamically generates a structured Boolean search query string
     blocks = []
 
     if titles:
@@ -201,11 +197,11 @@ generated_query = build_boolean_query(
 )
 
 st.markdown("---")
-st.subheader(" Generated Boolean Search Query")
+st.subheader("📋 Generated Boolean Search Query")
 st.code(generated_query, language="text")
 
 # Dynamic Search Launchers
-st.subheader(" One-Click Platform Search Launchers")
+st.subheader("🚀 One-Click Platform Search Launchers")
 
 encoded_query = urllib.parse.quote(generated_query)
 
@@ -215,10 +211,10 @@ google_xray_url = f"https://www.google.com/search?q=site:linkedin.com/in/+OR+sit
 btn_col1, btn_col2 = st.columns(2)
 
 with btn_col1:
-    st.link_button(" Run on LinkedIn Germany", linkedin_url, use_container_width=True)
+    st.link_button("🔎 Run on LinkedIn Germany", linkedin_url, use_container_width=True)
 
 with btn_col2:
-    st.link_button(" Run Google X-Ray Search", google_xray_url, use_container_width=True)
+    st.link_button("🌐 Run Google X-Ray Search", google_xray_url, use_container_width=True)
 
 # Footer Note
 st.markdown("---")
