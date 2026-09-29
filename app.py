@@ -1,5 +1,4 @@
 import urllib.parse
-import pandas as pd
 import streamlit as st
 
 # Page Configuration
@@ -10,7 +9,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# Custom Styling for Streamlit Controls
+# Custom Styling
 st.markdown(
     """
     <style>
@@ -38,7 +37,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Sidebar - Preset Target Profiles
+# Sidebar - Preset Profiles
 st.sidebar.header("🎯 Preset Target Profiles")
 preset = st.sidebar.selectbox(
     "Select a pre-filled configuration:",
@@ -53,109 +52,57 @@ preset = st.sidebar.selectbox(
 st.sidebar.markdown("---")
 st.sidebar.header("⚙️ Filter Preferences")
 
-# Remote Work Toggle in Sidebar
 include_remote = st.sidebar.checkbox(
     "Include Remote / Flexible Keywords",
     value=True,
     help="Toggle off if you only want roles requiring immediate on-site relocation.",
 )
 
-st.sidebar.markdown("---")
-st.sidebar.markdown(
-    """
-**Targeting Platforms:**
-* LinkedIn Germany
-* StepStone.de
-* Google X-Ray Search
-"""
-)
-
-# Preset Parameter Values Logic
+# Preset Values
 if preset == "Financial Data Analyst":
-    default_titles = "Financial Data Analyst, Senior Data Analyst Finance, Corporate Finance Analyst"
-    default_skills = "Python, SQL, Tableau, Power BI, Streamlit"
-    default_domain = "Financial Modeling, Corporate Governance, Auditing"
+    default_titles = "Financial Data Analyst, Data Analyst Finance, Corporate Finance Analyst"
+    default_skills = "Python, SQL, Tableau, Power BI"
+    default_domain = "Financial Modeling, Governance, Auditing"
 elif preset == "Risk Analytics Specialist":
     default_titles = "Risk Data Analyst, Quantitative Risk Analyst, Credit Risk Specialist"
-    default_skills = "Python, SQL, R, Econometrics, Scikit-learn"
-    default_domain = "Macroeconomics, Credit Decay, Risk Modeling"
+    default_skills = "Python, SQL, R, Econometrics"
+    default_domain = "Macroeconomics, Risk Modeling"
 elif preset == "FinTech Audit & Governance":
     default_titles = "Forensic Analytics Manager, Revenue Assurance Analyst, IT Auditor"
-    default_skills = "SQL, Python, Forensic Accounting, Revenue Assurance"
-    default_domain = "Regulatory Compliance, Financial Auditing, Banking Guidelines"
+    default_skills = "SQL, Python, Forensic Accounting"
+    default_domain = "Regulatory Compliance, Auditing"
 else:
     default_titles = "Financial Data Analyst, Risk Analytics Specialist"
-    default_skills = "Python, SQL, Streamlit, Tableau"
-    default_domain = "Auditing, Governance, Econometrics"
+    default_skills = "Python, SQL, Tableau"
+    default_domain = "Auditing, Governance"
 
-default_remote = "Remote, Work from Anywhere, Home Office, Distributed Team"
-default_langs = "English, working language English"
+default_remote = "Remote, Home Office"
+default_langs = "English"
 default_visas = "Visa Sponsorship, Relocation"
-default_excludes = "German Required, Fluent German, Internship, Student"
+default_excludes = "German Required, Internship"
 
-# Main Form Layout - 2 Columns
+# Main Layout
 col1, col2 = st.columns(2)
 
 with col1:
     st.subheader("1. Role & Core Competency Parameters")
-
-    titles_input = st.text_area(
-        "Job Titles (comma-separated)",
-        value=default_titles,
-        height=100,
-        help="Primary job titles you are targeting.",
-    )
-
-    skills_input = st.text_area(
-        "Technical Stack (comma-separated)",
-        value=default_skills,
-        height=100,
-        help="Programming languages, visualization, and analytics tools.",
-    )
-
-    domain_input = st.text_area(
-        "Domain Expertise (comma-separated)",
-        value=default_domain,
-        height=100,
-        help="Subject-matter skills that differentiate your profile.",
-    )
+    titles_input = st.text_area("Job Titles (comma-separated)", value=default_titles, height=90)
+    skills_input = st.text_area("Technical Stack (comma-separated)", value=default_skills, height=90)
+    domain_input = st.text_area("Domain Expertise (comma-separated)", value=default_domain, height=90)
 
 with col2:
     st.subheader("2. Work Rights, Remote & Language Constraints")
-
     if include_remote:
-        remote_input = st.text_area(
-            "Remote Keywords (comma-separated)",
-            value=default_remote,
-            height=80,
-            help="Keywords to capture off-site and flexible working models.",
-        )
+        remote_input = st.text_area("Remote Keywords", value=default_remote, height=70)
     else:
         remote_input = ""
-        st.info("💡 Remote keywords excluded. Query will focus strictly on relocation/on-site postings.")
+        st.info("💡 Focus set to on-site/relocation roles.")
 
-    lang_input = st.text_area(
-        "Working Language Keywords",
-        value=default_langs,
-        height=70,
-        help="Keywords ensuring English is accepted as the working language.",
-    )
+    lang_input = st.text_area("Working Language", value=default_langs, height=60)
+    visa_input = st.text_area("Visa & Relocation Support", value=default_visas, height=60)
+    exclude_input = st.text_area("Exclusion Keywords (NOT)", value=default_excludes, height=60)
 
-    visa_input = st.text_area(
-        "Visa & Relocation Support",
-        value=default_visas,
-        height=70,
-        help="Keywords filtering for employers supporting international relocation.",
-    )
-
-    exclude_input = st.text_area(
-        "Exclusion Keywords (NOT)",
-        value=default_excludes,
-        height=70,
-        help="Keywords to eliminate non-qualifying listings.",
-    )
-
-# Logic to Process Inputs into Search Arrays
+# Parsing Inputs
 titles = [x.strip() for x in titles_input.split(",") if x.strip()]
 skills = [x.strip() for x in skills_input.split(",") if x.strip()]
 domain = [x.strip() for x in domain_input.split(",") if x.strip()]
@@ -165,10 +112,9 @@ visas = [x.strip() for x in visa_input.split(",") if x.strip()]
 excludes = [x.strip() for x in exclude_input.split(",") if x.strip()]
 
 
-def build_boolean_query(titles, skills, domain, remotes, langs, visas, excludes):
-    # Dynamically generates a structured Boolean search query string
+# Full Query Builder for Internal Job Board Search Bars (LinkedIn Job Search Bar)
+def build_full_query(titles, skills, domain, remotes, langs, visas, excludes):
     blocks = []
-
     if titles:
         blocks.append(f"({' OR '.join([f'\"{t}\"' for t in titles])})")
     if skills:
@@ -182,42 +128,48 @@ def build_boolean_query(titles, skills, domain, remotes, langs, visas, excludes)
     if visas:
         blocks.append(f"({' OR '.join([f'\"{v}\"' for v in visas])})")
 
-    main_query = " AND ".join(blocks)
-
+    main_q = " AND ".join(blocks)
     if excludes:
-        not_clause = " ".join([f'NOT "{e}"' for e in excludes])
-        main_query = f"{main_query} {not_clause}"
-
-    return main_query
+        main_q += " " + " ".join([f'NOT "{e}"' for e in excludes])
+    return main_q
 
 
-# Generate Query Output
-generated_query = build_boolean_query(
-    titles, skills, domain, remotes, langs, visas, excludes
-)
+# High-Precision Lean Query for Google X-Ray Search
+def build_xray_query(titles, skills, remotes):
+    title_block = f"({' OR '.join([f'\"{t}\"' for t in titles[:2]])})" if titles else ""
+    skill_block = f"({' OR '.join([f'\"{s}\"' for s in skills[:2]])})" if skills else ""
+    
+    # Target Google explicitly at German job pages
+    query = f"site:de.linkedin.com/jobs/view OR site:stepstone.de/jobs {title_block} {skill_block} \"English\" \"Germany\""
+    if remotes:
+        query += " \"Remote\""
+    return query
+
+
+full_generated_query = build_full_query(titles, skills, domain, remotes, langs, visas, excludes)
+xray_generated_query = build_xray_query(titles, skills, remotes)
 
 st.markdown("---")
-st.subheader("📋 Generated Boolean Search Query")
-st.code(generated_query, language="text")
+st.subheader("📋 Comprehensive ATS Search Query (For LinkedIn / Job Board Search Bar)")
+st.code(full_generated_query, language="text")
 
 # Dynamic Search Launchers
-st.subheader("🚀 One-Click Platform Search Launchers")
+st.subheader("🚀 One-Click Job Search Launchers")
 
-encoded_query = urllib.parse.quote(generated_query)
+# Native LinkedIn Job Search URL
+encoded_linkedin = urllib.parse.quote(f"({' OR '.join([f'\"{t}\"' for t in titles])}) AND English AND (Visa OR Relocation OR Remote)")
+linkedin_url = f"https://www.linkedin.com/jobs/search/?keywords={encoded_linkedin}&location=Germany"
 
-linkedin_url = f"https://www.linkedin.com/jobs/search/?keywords={encoded_query}&location=Germany"
-google_xray_url = f"https://www.google.com/search?q=site:linkedin.com/in/+OR+site:stepstone.de+{encoded_query}"
+# Google X-Ray URL targeting job posting pages strictly
+google_xray_url = f"https://www.google.com/search?q={urllib.parse.quote(xray_generated_query)}"
 
 btn_col1, btn_col2 = st.columns(2)
 
 with btn_col1:
-    st.link_button("🔎 Run on LinkedIn Germany", linkedin_url, use_container_width=True)
+    st.link_button("🔎 Open LinkedIn Germany Job Search", linkedin_url, use_container_width=True)
 
 with btn_col2:
-    st.link_button("🌐 Run Google X-Ray Search", google_xray_url, use_container_width=True)
+    st.link_button("🌐 Open Google X-Ray Job Search", google_xray_url, use_container_width=True)
 
-# Footer Note
 st.markdown("---")
-st.caption(
-    "Built for Finance, Risk, and Data Analytics professionals targeting English-speaking skilled worker roles in Germany."
-)
+st.caption("Updated Engine: Targets job postings strictly (excluding candidate profiles) for English-speaking roles in Germany.")
