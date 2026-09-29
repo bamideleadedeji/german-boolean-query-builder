@@ -11,6 +11,7 @@ st.set_page_config(
 )
 
 # Custom Styling for Streamlit Controls
+# Custom Styling for Streamlit Controls
 st.markdown(
     """
     <style>
@@ -25,6 +26,9 @@ st.markdown(
         margin-bottom: 25px;
     }
     </style>
+""",
+    unsafe_allow_html=True,  # Corrected parameter name
+)
 """,
     unsafe_allow_allow_html=True,
 )
